@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState,useEffect,useRef } from 'react'
 import axios from '../api/axios';
-const REGISTER_URL='/signup'
+const REGISTER_URL='/signup/'
 const Register = () => {
     const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -26,6 +26,7 @@ const Register = () => {
     const [confirmPwdFocus,setConfirmPwdFocus]=useState('')
     const [error,setError]=useState('')
 
+    const [success,setSuccess]=useState(false)
 
     useEffect(()=>{
         nameref.current.focus()
@@ -52,7 +53,8 @@ const Register = () => {
     async function handleSubmit (e) {
         e.preventDefault()
         try {
-            const response=await axios.post(REGISTER_URL,JSON.stringify({user:name,password:pwd}),{withCredentials:true,headers:{'content-Type':'application/json'}})
+            const response=await axios.post(REGISTER_URL,JSON.stringify({username:name,email:email,password1:pwd,password2:confirmpwd}),{headers:{'content-Type':'application/json'}})
+            setSuccess(true)
         } catch (error) {
             if (!error?.response) {
                 setError('NO SERVER RESPONSE');
@@ -61,86 +63,90 @@ const Register = () => {
             }else{
                 setError('REGISTRATION FAILED');
             }
-            errorref.current.focus()
+          
         }
     }
 
   return (
-    <div className='Register'>
+    <>
+    {success?<h1>REGISTRATION SUCCESSFUL</h1>:
+     <div className='Register'>
         
-        <form onSubmit={handleSubmit}>
-        {error&& <div className="error" ref={errorref}>{error}</div>}
-            <h1>Create an E-ticket Account</h1>
-            <div className='fullname'>
-            <label htmlFor="fullname">Fullname</label>
-            <input
-            ref={nameref}
-            aria-describedby="uidnote"
-            aria-invalid={validName?'false':'true'}
-            id='fullname'
-            name='fullname'
-            type="text"
-            required
-            autoComplete='true'
-            onChange={(e)=>setName(e.target.value)}
-            value={name}
-            onFocus={()=>setNameFocus(true)}
-            onBlur={()=>setNameFocus(false)}
-            />
-            {!validName&&name&&nameFocus  && <div>sdtfyghjkljhfgdgxfcgh</div>}
+     <form onSubmit={handleSubmit}>
+     {error&& <div className="error" ref={errorref}>{error}</div>}
+         <h1>Create an E-ticket Account</h1>
+         <div className='fullname'>
+         <label htmlFor="fullname">Username</label>
+         <input
+         ref={nameref}
+         aria-describedby="uidnote"
+         aria-invalid={validName?'false':'true'}
+         id='fullname'
+         name='fullname'
+         type="text"
+         required
+         autoComplete='true'
+         onChange={(e)=>setName(e.target.value)}
+         value={name}
+         onFocus={()=>setNameFocus(true)}
+         onBlur={()=>setNameFocus(false)}
+         />
+         {!validName&&name&&nameFocus  && <div>sdtfyghjkljhfgdgxfcgh</div>}
 
-            </div>
+         </div>
 
-            <div className='email'>
-            <label htmlFor="email">Email</label>
-            <input
-            id='email'
-            name='email'
-            type="email"
-            required
-            autoComplete='true'
-            onChange={(e)=>setEmail(e.target.value)}
-            value={email}
-            onFocus={()=>setEmailFocus(true)}
-            onBlur={()=>setEmailFocus(false)}
-            aria-invalid={validEmail?'false':'true'}
-            />
-            {!validEmail&&email &&emailFocus && <div>sdtfyghjkljhfgdgxfcgh</div>}
-            </div>
+         <div className='email'>
+         <label htmlFor="email">Email</label>
+         <input
+         id='email'
+         name='email'
+         type="email"
+         required
+         autoComplete='true'
+         onChange={(e)=>setEmail(e.target.value)}
+         value={email}
+         onFocus={()=>setEmailFocus(true)}
+         onBlur={()=>setEmailFocus(false)}
+         aria-invalid={validEmail?'false':'true'}
+         />
+         {!validEmail&&email &&emailFocus && <div>sdtfyghjkljhfgdgxfcgh</div>}
+         </div>
 
-            <div className="password">
-            <label htmlFor="password">Password</label>
-            <input
-            id='password'
-            name='password'
-            type="password"
-            required
-            onChange={(e)=>setPwd(e.target.value)}
-            value={pwd}
-            onFocus={()=>setPwdFocus(true)}
-            onBlur={()=>setPwdFocus(false)}
-            aria-describedby="password"
-            aria-invalid={validPwd?'false':'true'}
-            />
-            {!validPwd&&pwd &&pwdFocus && <div>sdtfyghjkljhfgdgxfcgh</div>}
-            </div>
+         <div className="password">
+         <label htmlFor="password">Password</label>
+         <input
+         id='password'
+         name='password'
+         type="password"
+         required
+         onChange={(e)=>setPwd(e.target.value)}
+         value={pwd}
+         onFocus={()=>setPwdFocus(true)}
+         onBlur={()=>setPwdFocus(false)}
+         aria-describedby="password"
+         aria-invalid={validPwd?'false':'true'}
+         />
+         {!validPwd&&pwd &&pwdFocus && <div>sdtfyghjkljhfgdgxfcgh</div>}
+         </div>
 
-            <div className="confirmpassword">
-            <label htmlFor="confirmpassword">Confirm password</label>
-            <input
-            id='confirmpassword'
-            name='confirmpassword'
-            type="password"
-            required
-            onChange={(e)=>setConfirmPwd(e.target.value)}
-            value={confirmpwd}
-            />
-            {!validConfirmPwd&&confirmpwd  && <div>sdtfyghjkljhfgdgxfcgh</div>}
-            </div>
-            
-            <button type="submit" disabled={!validConfirmPwd ||!validEmail || !validPwd ||!validEmail || !validName?true:false }>submit</button>
-                   </form>
-    </div>
+         <div className="confirmpassword">
+         <label htmlFor="confirmpassword">Confirm password</label>
+         <input
+         id='confirmpassword'
+         name='confirmpassword'
+         type="password"
+         required
+         onChange={(e)=>setConfirmPwd(e.target.value)}
+         value={confirmpwd}
+         />
+         {!validConfirmPwd&&confirmpwd  && <div>sdtfyghjkljhfgdgxfcgh</div>}
+         </div>
+         
+         <button type="submit" disabled={!validConfirmPwd ||!validEmail || !validPwd ||!validEmail || !validName?true:false }>submit</button>
+                </form>
+ </div>}
+   
+    </>
   )
 }
 

@@ -9,9 +9,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
     <Authprovider>
       <Routes>
-        <Route path='*/' element={<App />} />
+        <Route path='/*' element={<App />} />
       </Routes>
     </Authprovider>
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

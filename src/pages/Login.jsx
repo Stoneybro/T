@@ -1,18 +1,26 @@
 import React,{useState} from 'react'
 import axios from '../api/axios'
 import {useAuth} from '../Context/Auth'
+import {useLocation,useNavigate} from 'react-router-dom'
+
 const Login = () => {
-  const LOGIN_URL='/login'
-  const {setAuth}=useAuth()
+  const LOGIN_URL='/login/'
+  const {setAuth,auth}=useAuth()
   const [email,setEmail]=useState('')
-  const [pwd,setPwd]=useState('')
+  const [password,setPassword]=useState('')
   const [error,setError]=useState('')
-  console.log(auth);
-  async function handleSubmit(params) {
+  const Location=useLocation()
+  const navigate=useNavigate()
+  const from=Location.state?.from?.pathname || '/'
+  const [success,setSuccess]=useState(false)
+  async function handleSubmit(e) {
+    e.preventDefault()
+    
     try {
-      const response=await axios.post(LOGIN_URL,JSON.stringify(({email,password:pwd}),{withCredentials:true,headers:{'content-Type':'application/json'}}))
-      const accesstoken=response?.data?.accesstoken
-      
+      const response=await axios.post(LOGIN_URL,JSON.stringify({email,password}),{headers:{'content-Type':'application/json'}})
+      const accesstoken=response?.data?.access_token
+      setAuth({email,accesstoken})
+      navigate(from,{replace:true})
     } catch (error) {
       if (!error?.response) {
         setError('NO SERVER RESPONSE')
@@ -27,7 +35,8 @@ const Login = () => {
   }
 
   return (
-    <div>
+    <>
+ 
       <form onSubmit={handleSubmit}>
         <h1>Sign into your account</h1>
         {error&& <div className="error">{error}</div>}
@@ -48,13 +57,15 @@ const Login = () => {
             name='password'
             type="password"
             required
-            onChange={(e)=>setPwd(e.target.value)}
-            value={pwd}
+            onChange={(e)=>setPassword(e.target.value)}
+            value={password}
             aria-describedby="password"
             />
             <button type="submit">Sign in</button>
       </form>
-    </div>
+    
+    </>
+   
   )
 }
 
